@@ -1,0 +1,16 @@
+### macOS Cruft ###
+.DS_Store
+
+### Python Cruft ###
+*.pyc
+__pycache__/
+
+### Virtual Environment ###
+venv-enigma/
+
+### Sensitive Information ###
+01-createsuperuser.config
+*.env
+
+### Local Database ###
+db.sqlite3
