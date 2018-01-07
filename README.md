@@ -15,7 +15,7 @@ pip install -r requirements.txt
 To contribute, branch off of the `develop` branch as either `feature/name` or `bug/name` and submit a PR to `develop`
 
 ## Built With
-Enigma is built off of [Python](https://python.org)'s [Django](https://djangoproject.com) framework using Google's [Material Design Lite](https://getmdl.io/) on the frontend and hosted in the cloud using AWS's [Elastic Beanstalk](https://aws.amazon.com/elasticbeanstalk/).
+Enigma is built off of [Python](https://python.org)'s [Django](https://djangoproject.com) framework using Google's [Material Design Components](https://material.io/components/web/) on the frontend and hosted in the cloud using AWS's [Elastic Beanstalk](https://aws.amazon.com/elasticbeanstalk/).
 
 ## Additional Documentation
 This [proposal](https://docs.google.com/document/d/1Y6Auw5azimS5MpI1qPMfv5xGLXKD-K_g-iwgkZx5NRk/) describes the various features and considerations for building Enigma.
