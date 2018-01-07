@@ -20,12 +20,18 @@ def home(request):
     message_record.save()
 
 
-def view_secret_confirmation(request, uuid):
+def view_secret(request, confirmation, uuid):
     """Renders a modal that asks for users to confirm whether they
-    would like to view the secret they intended to load"""
+    would like to view the secret they intended to load. If users do not
+    want to view the secret, the modal closes. If users want to view the secret,
+    display it and delete it from the database."""
     try:
-        message = models.Secret.objects.get(uuid=uuid)
-        context = {'secret_exists': True}
+        secret = models.Secret.objects.get(uuid=uuid)
+        message = secret.message
+        if confirmation == 'view':
+            context = {'secret_exists': True, 'secret_message': message}
+        else:
+            context = {'secret_exists': True}
     except:
         context = {'secret_exists': False}
 
