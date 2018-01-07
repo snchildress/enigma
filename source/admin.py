@@ -4,7 +4,7 @@ from source import models
 
 
 class SecretAdmin(admin.ModelAdmin):
-    readonly_fields = ('create_timestamp', 'update_timestamp')
+    readonly_fields = ('uuid', 'create_timestamp', 'update_timestamp')
     ### Do not display Messages in the admin, as they appear in plain text ###
     exclude = ('message',)
 
