@@ -74,11 +74,7 @@
                     {% if secret_message %}
                         <div class="mdc-text-field mdc-text-field--box" style="margin:auto; width:inherit; height:250px;">
                             <div style="margin:auto; width:600px; height:250px;" class="mdc-text-field--box">
-                                <textarea required id="text_to_copy" type="text" class="mdc-text-field__input" style="padding:20px;" readonly>
-                                    {% autoescape off %}
-                                        {{ secret_message }}
-                                    {% endautoescape %}
-                                </textarea>
+                                <textarea required id="text_to_copy" type="text" class="mdc-text-field__input" style="padding:20px;" readonly>{% autoescape off %}{{ secret_message }}{% endautoescape %}</textarea>
                                 <div class="mdc-text-field__bottom-line"></div>
                             </div>
                         </div>

@@ -1,0 +1,12 @@
+branch-defaults:
+  develop:
+    environment: enigma-dev
+  master:
+    environment: enigma-prod
+global:
+  application_name: enigma
+  default_ec2_keyname: null
+  default_platform: 64bit Amazon Linux 2017.09 v2.6.2 running Python 3.6
+  default_region: us-east-1
+  profile: eb-cli
+  sc: git
