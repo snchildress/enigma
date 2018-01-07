@@ -21,5 +21,7 @@ from source import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home')
+    path('', views.home, name='home'),
+    path('secret/<uuid:uuid>', views.view_secret_confirmation,
+         name='view_secret_confirmation'),
 ]

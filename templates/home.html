@@ -36,38 +36,41 @@
 </div>
 
 
-<!-- Information modal -->
-<aside id="modal" class="mdc-dialog">
-    <div class="mdc-dialog__surface" style="padding:20px; max-width:650px;">
-        <header class="mdc-dialog__header">
-            <h2 id="my-mdc-dialog-label" class="mdc-dialog__header__title">
-                View Secret?
-            </h2>
-        </header>
+<!-- Only display the view secret confirmation modal if a secret keys based on the specified UUID -->
+{% if secret_exists %}
+    <!-- Information modal -->
+    <aside id="modal" class="mdc-dialog">
+        <div class="mdc-dialog__surface" style="padding:20px; max-width:650px;">
+            <header class="mdc-dialog__header">
+                <h2 id="my-mdc-dialog-label" class="mdc-dialog__header__title">
+                    View Secret?
+                </h2>
+            </header>
 
-        <section id="my-mdc-dialog-description" class="mdc-dialog__body">
-            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;&nbsp;This secret can only be viewed once, so store it somewhere safe!
-        </section>
+            <section id="my-mdc-dialog-description" class="mdc-dialog__body">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;&nbsp;This secret can only be viewed once, so store it somewhere safe!
+            </section>
 
-        <footer class="mdc-dialog__footer">
-            <a href="{% url 'home' %}" id="view_secret">
-                <button type="button" class="mdc-button mdc-button--raised mdc-dialog__footer__button mdc-dialog__footer__button--accept">
-                    View Secret
-                </button>
-            </a>
-        </footer>
-    </div>
-    <div class="mdc-dialog__backdrop"></div>
-</aside>
+            <footer class="mdc-dialog__footer">
+                <a href="{% url 'home' %}" id="view_secret">
+                    <button type="button" class="mdc-button mdc-button--raised mdc-dialog__footer__button mdc-dialog__footer__button--accept">
+                        View Secret
+                    </button>
+                </a>
+            </footer>
+        </div>
+        <div class="mdc-dialog__backdrop"></div>
+    </aside>
 
 
-<!-- Opens the modal on page load -->
-<!-- This is only temporary while I build usage of it out -->
-<script>
-    window.onload = function() {
-        var modal = document.getElementById('modal');
-        modal.className += ' mdc-dialog--open';
-    };
-</script>
+    <!-- Opens the modal on page load -->
+    <!-- This is only temporary while I build usage of it out -->
+    <script>
+        window.onload = function() {
+            var modal = document.getElementById('modal');
+            modal.className += ' mdc-dialog--open';
+        };
+    </script>
+{% endif %}
 
 {% endblock %}
