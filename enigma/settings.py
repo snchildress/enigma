@@ -27,12 +27,14 @@ ALLOWED_HOSTS = ['localhost']
 # Application definition
 
 INSTALLED_APPS = [
+    'source',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'encrypted_model_fields',
 ]
 
 MIDDLEWARE = [
@@ -130,3 +132,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+
+
+### Enigma-specific settings ###
+
+FIELD_ENCRYPTION_KEY = os.environ['FIELD_ENCRYPTION_KEY']
