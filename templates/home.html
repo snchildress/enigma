@@ -36,14 +36,16 @@
 </div>
 
 
-<!-- Only display the view secret confirmation modal if a secret keys based on the specified UUID -->
-{% if secret_exists %}
+<!-- Only display the modal if specified by the backend -->
+{% if open_modal %}
     <!-- Information modal -->
     <aside id="modal" class="mdc-dialog">
         <div class="mdc-dialog__surface" style="padding:20px; max-width:650px;">
             <header class="mdc-dialog__header">
                 <h2 id="my-mdc-dialog-label" class="mdc-dialog__header__title">
-                    {% if secret_message %}
+                    {% if display_url %}
+                        Secret Message URL
+                    {% elif secret_message %}
                         Secret Message
                     {% else %}
                         View Secret?
@@ -52,27 +54,44 @@
             </header>
 
             <section id="my-mdc-dialog-description" class="mdc-dialog__body">
-                {% if secret_message %}
-                    {{ secret_message }}
+                {% if display_url or secret_message %}
+                    {% if display_url %}
+                        Share this URL with your secret recipient:
+                    {% endif %}
+                    <br />
+                    <div class="mdc-text-field" style="width:100%;
+                    {% if display_url %}
+                        margin-top:10px;
+                    {% endif %}
+                    ">
+                        <input type="text" id="message_url" class="mdc-text-field__input"
+                            {% if display_url %}
+                                value="{{ message_url }}"
+                            {% elif secret_message %}
+                                value="{{ secret_message }}"
+                            {% endif %}
+                            readonly />
+                        <div class="mdc-text-field__bottom-line"></div>
+                    </div>
                 {% else %}
                     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;&nbsp;This secret can only be viewed once, so store it somewhere safe!
                 {% endif %}
             </section>
 
             <footer class="mdc-dialog__footer">
-                {% if not secret_message %}
+                {% if not display_url and not secret_message %}
                     <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel" id="cancel">
                         View Later
                     </button>
                 {% endif %}
 
-                {% if secret_message %}
+                {% if display_url or secret_message %}
                     <a href="{% url 'home' %}" id="view_secret">
                 {% else %}
                     <a href="{% url 'view_secret' confirmation='view' uuid=uuid %}" id="view_secret">
                 {% endif %}
                     <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept" id="accept">
-                        {% if secret_message %}
+                        {% if display_url or secret_message %}
                             Got It!
                         {% else %}
                             View Secret

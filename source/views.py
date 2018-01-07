@@ -19,6 +19,14 @@ def home(request):
     message_record = models.Secret(message=message)
     message_record.save()
 
+    message_url = request.build_absolute_uri() + 'secret/confirm/' + str(message_record.uuid)
+    context = {
+        'open_modal': True,
+        'display_url': True,
+        'message_url': message_url
+    }
+    return render(request, 'home.html', context)
+
 
 def view_secret(request, confirmation, uuid):
     """Renders a modal that asks for users to confirm whether they
@@ -29,7 +37,7 @@ def view_secret(request, confirmation, uuid):
         secret = models.Secret.objects.get(uuid=uuid)
         message = secret.message
         context = {
-            'secret_exists': True,
+            'open_modal': True,
             'uuid': uuid
         }
         ### Display the message and delete it if `/view` is in the path ###
@@ -39,6 +47,6 @@ def view_secret(request, confirmation, uuid):
             # secret.delete()
     except:
         # TODO: Display an error message that the secret no longer exists
-        context = {'secret_exists': False}
+        context = {'open_modal': False}
 
     return render(request, 'home.html', context)
