@@ -60,12 +60,18 @@
             </section>
 
             <footer class="mdc-dialog__footer">
+                {% if not secret_message %}
+                    <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel" id="cancel">
+                        View Later
+                    </button>
+                {% endif %}
+
                 {% if secret_message %}
                     <a href="{% url 'home' %}" id="view_secret">
                 {% else %}
                     <a href="{% url 'view_secret' confirmation='view' uuid=uuid %}" id="view_secret">
                 {% endif %}
-                    <button type="button" class="mdc-button mdc-button--raised mdc-dialog__footer__button mdc-dialog__footer__button--accept">
+                    <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept" id="accept">
                         {% if secret_message %}
                             Got It!
                         {% else %}
@@ -85,6 +91,16 @@
         window.onload = function() {
             var modal = document.getElementById('modal');
             modal.className += ' mdc-dialog--open';
+
+            {% if not secret_message %}
+                var acceptButton = document.getElementById('accept');
+                acceptButton.className += ' mdc-button--raised';
+
+                var cancelButton = document.getElementById('cancel');
+                cancelButton.onclick = function () {
+                    modal.className -= ' mdc-dialog--open';
+                };
+            {% endif %}
         };
     </script>
 {% endif %}
