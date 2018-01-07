@@ -1,38 +1,40 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <div class="mdc-toolbar-fixed-adjust" style="padding-top:1em; margin:auto; width:600px;">
     <br />
     <br />
 
     <h2 class="mdc-typography--display3" style="text-align:center;">Share your secrets</h2>
-    <p class="mdc-typography--body1" style="padding:20px;">
+    <p class="mdc-typography--body1" style="padding-left:20px;">
         Enigma encrypts your secret end-to-end and deletes it as soon as it's opened.
     </p>
     <br />
 
-    <div class="mdc-text-field mdc-text-field--box" style="margin:auto; width:inherit; height:250px;">
-        <form id="form" class="mdc-form-field">
+    <form action="{% url 'home' %}" method="post" id="form">
+        {% csrf_token %}
+        <div class="mdc-text-field mdc-text-field--box" style="margin:auto; width:inherit; height:250px;">
             <div style="margin:auto; width:600px; height:250px;" class="mdc-text-field--box" data-mdc-auto-init="MDCTextField">
-                <textarea required id="secret" type="text" class="mdc-text-field__input" style="padding:20px;"></textarea>
-                <label for="secret" class="mdc-text-field__label" style="text-align:left;">
+                <textarea required id="message" name="message" type="text" class="mdc-text-field__input" style="padding:20px;"></textarea>
+                <label for="message" class="mdc-text-field__label" style="text-align:left;">
                     What's <i>your</i> secret?
                 </label>
                 <div class="mdc-text-field__bottom-line"></div>
             </div>
-        </form>
-    </div>
-    <br />
-    <br />
+        </div>
+        <br />
+        <br />
 
-    <p style="float:left;">
-        <a style="text-decoration:none;" href="https://luc.id/privacy-policy">Privacy Policy</a>
-    </p>
-    <br />
+        <p style="float:left;">
+            <a style="text-decoration:none;" href="https://luc.id/privacy-policy">Privacy Policy</a>
+        </p>
+        <br />
 
-    <button class="mdc-button mdc-button--raised" data-mdc-auto-init="MDCRipple" style="float:right;">
-       Generate link
-    </button>
+        <button type="submit" class="mdc-button mdc-button--raised" data-mdc-auto-init="MDCRipple" style="float:right;">
+            Generate link
+        </button>
+    </form>
 </div>
 
 {% endblock %}
