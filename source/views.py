@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.utils.html import escape
 
 from source import models
 
@@ -15,7 +16,8 @@ def home(request):
         return render(request, 'home.html')
 
     ### Get the message from the form and save it to the database ###
-    message = request.POST.get('message')
+    # message = request.POST.get('message')
+    message = escape(request.POST.get('message'))
     message_record = models.Secret(message=message)
     message_record.save()
 

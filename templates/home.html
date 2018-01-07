@@ -54,27 +54,25 @@
             </header>
 
             <section id="my-mdc-dialog-description" class="mdc-dialog__body">
-                {% if display_url or secret_message %}
-                    {% if display_url %}
-                        Share this URL with your secret recipient:
-                    {% endif %}
+                {% if display_url %}
+                    Share this URL with your secret recipient:
                     <br />
-                    <div class="mdc-text-field" style="width:100%;
-                    {% if display_url %}
-                        margin-top:10px;
-                    {% endif %}
-                    ">
-                        <input type="text" id="message_url" class="mdc-text-field__input"
-                            {% if display_url %}
-                                value="{{ message_url }}"
-                            {% elif secret_message %}
-                                value="{{ secret_message }}"
-                            {% endif %}
-                            readonly />
+                    <div class="mdc-text-field" style="width:100%; margin-top:10px;">
+                        <input type="text" id="message_url" class="mdc-text-field__input" value="{{ message_url }}" readonly />
                         <div class="mdc-text-field__bottom-line"></div>
                     </div>
                 {% else %}
                     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;&nbsp;This secret can only be viewed once, so store it somewhere safe!
+                {% endif %}
+                {% if secret_message %}
+                    <br />
+                    <br />
+                    <div class="mdc-text-field mdc-text-field--box" style="margin:auto; width:inherit; height:250px;">
+                        <div style="margin:auto; width:600px; height:250px;" class="mdc-text-field--box">
+                            <textarea required id="message" name="message" type="text" class="mdc-text-field__input" style="padding:20px;" readonly>{{ secret_message }}</textarea>
+                            <div class="mdc-text-field__bottom-line"></div>
+                        </div>
+                    </div>
                 {% endif %}
             </section>
 
