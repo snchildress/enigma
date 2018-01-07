@@ -47,6 +47,8 @@
                         Secret Message URL
                     {% elif secret_message %}
                         Secret Message
+                    {% elif deleted_message %}
+                        No Secret Message
                     {% else %}
                         View Secret?
                     {% endif %}
@@ -62,6 +64,9 @@
                         <div class="mdc-text-field__bottom-line"></div>
                     </div>
                     <div id="copy_message_display_url" style="visibility:hidden;">URL copied!</div>
+                {% elif deleted_message %}
+                    This message no longer exists! It was either previously opened, or the URL is incorrect.
+                    <br /><br /><br />
                 {% else %}
                     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;&nbsp;This secret can only be viewed once, so store it somewhere safe!
                     <br />
@@ -69,7 +74,11 @@
                     {% if secret_message %}
                         <div class="mdc-text-field mdc-text-field--box" style="margin:auto; width:inherit; height:250px;">
                             <div style="margin:auto; width:600px; height:250px;" class="mdc-text-field--box">
-                                <textarea required id="text_to_copy" type="text" class="mdc-text-field__input" style="padding:20px;" readonly>{{ secret_message }}</textarea>
+                                <textarea required id="text_to_copy" type="text" class="mdc-text-field__input" style="padding:20px;" readonly>
+                                    {% autoescape off %}
+                                        {{ secret_message }}
+                                    {% endautoescape %}
+                                </textarea>
                                 <div class="mdc-text-field__bottom-line"></div>
                             </div>
                         </div>
@@ -84,7 +93,7 @@
             <footer class="mdc-dialog__footer">
                 {% if not secret_message %}
                     <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel" id="cancel">
-                        {% if display_url %}
+                        {% if display_url or deleted_message %}
                             Got It!
                         {% else %}
                             View Later
@@ -92,20 +101,22 @@
                     </button>
                 {% endif %}
 
-                {% if not display_url and not secret_message %}
-                    <a href="{% url 'view_secret' confirmation='view' uuid=uuid %}" id="view_secret">
-                {% endif %}
-                    <button type="button" class="mdc-button  mdc-button--raised mdc-dialog__footer__button mdc-dialog__footer__button--accept" id="accept">
-                        {% if display_url %}
-                            Copy URL
-                        {% elif secret_message %}
-                            Copy Secret
-                        {% else %}
-                            View Secret
-                        {% endif %}
-                    </button>
-                {% if not display_url and not secret_message %}
-                    </a>
+                {% if not deleted_message %}
+                    {% if not display_url and not secret_message %}
+                        <a href="{% url 'view_secret' confirmation='view' uuid=uuid %}" id="view_secret">
+                    {% endif %}
+                        <button type="button" class="mdc-button  mdc-button--raised mdc-dialog__footer__button mdc-dialog__footer__button--accept" id="accept">
+                            {% if display_url %}
+                                Copy URL
+                            {% elif secret_message %}
+                                Copy Secret
+                            {% else %}
+                                View Secret
+                            {% endif %}
+                        </button>
+                    {% if not display_url and not secret_message %}
+                        </a>
+                    {% endif %}
                 {% endif %}
             </footer>
         </div>

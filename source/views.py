@@ -34,7 +34,7 @@ def view_secret(request, confirmation, uuid):
     """Renders a modal that asks for users to confirm whether they
     would like to view the secret they intended to load. If users do not
     want to view the secret, the modal closes. If users want to view the secret,
-    display it and delete it from the database."""
+    display it and delete it from the database"""
     try:
         secret = models.Secret.objects.get(uuid=uuid)
         message = secret.message
@@ -46,9 +46,12 @@ def view_secret(request, confirmation, uuid):
         ### Otherwise ask for confirmation to display the message       ###
         if confirmation == 'view':
             context['secret_message'] = message
-            # secret.delete()
+            secret.delete()
     except:
-        # TODO: Display an error message that the secret no longer exists
-        context = {'open_modal': False}
+        ### Display an error message that the secret no longer exists ###
+        context = {
+            'open_modal': True,
+            'deleted_message': True
+        }
 
     return render(request, 'home.html', context)
