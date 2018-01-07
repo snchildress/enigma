@@ -60,7 +60,11 @@
             </section>
 
             <footer class="mdc-dialog__footer">
-                <a href="{% url 'home' %}" id="view_secret">
+                {% if secret_message %}
+                    <a href="{% url 'home' %}" id="view_secret">
+                {% else %}
+                    <a href="{% url 'view_secret' confirmation='view' uuid=uuid %}" id="view_secret">
+                {% endif %}
                     <button type="button" class="mdc-button mdc-button--raised mdc-dialog__footer__button mdc-dialog__footer__button--accept">
                         {% if secret_message %}
                             Got It!

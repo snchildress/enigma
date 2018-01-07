@@ -28,10 +28,12 @@ def view_secret(request, confirmation, uuid):
     try:
         secret = models.Secret.objects.get(uuid=uuid)
         message = secret.message
+        context = {
+            'secret_exists': True,
+            'uuid': uuid
+        }
         if confirmation == 'view':
-            context = {'secret_exists': True, 'secret_message': message}
-        else:
-            context = {'secret_exists': True}
+            context['secret_message'] = message
     except:
         context = {'secret_exists': False}
 
