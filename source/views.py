@@ -32,9 +32,13 @@ def view_secret(request, confirmation, uuid):
             'secret_exists': True,
             'uuid': uuid
         }
+        ### Display the message and delete it if `/view` is in the path ###
+        ### Otherwise ask for confirmation to display the message       ###
         if confirmation == 'view':
             context['secret_message'] = message
+            # secret.delete()
     except:
+        # TODO: Display an error message that the secret no longer exists
         context = {'secret_exists': False}
 
     return render(request, 'home.html', context)
