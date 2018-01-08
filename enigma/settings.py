@@ -140,3 +140,4 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 ### Enigma-specific settings ###
 
 FIELD_ENCRYPTION_KEY = os.environ['FIELD_ENCRYPTION_KEY']
+API_KEY = os.environ['API_KEY']

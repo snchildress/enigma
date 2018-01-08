@@ -24,4 +24,6 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('secret/<str:confirmation>/<uuid:uuid>', views.view_secret,
          name='view_secret'),
+    path('secrets/expired/delete', views.delete_expired_secrets,
+        name='delete_expired_secrets'),
 ]

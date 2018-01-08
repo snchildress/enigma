@@ -1,9 +1,32 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 from django.utils.html import escape
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 
 from source import models
 
+from datetime import datetime
+import pytz
+import json
 
+
+### Internal function ###
+
+def return_response(status, message):
+    success = False
+    if status == 200:
+        success = True
+    message = {
+        'Success': success,
+        'Message': message
+    }
+    message = json.dumps(message)
+    return HttpResponse(message, status=status, content_type='application/json')
+
+
+### External views ###
+
+### UI views ###
 def home(request):
     """Renders the secret submissions page as the homepage. If a user is
     submitting a secret, this function also saves the message in the
@@ -55,3 +78,38 @@ def view_secret(request, confirmation, uuid):
         }
 
     return render(request, 'home.html', context)
+
+
+### API view ###
+@csrf_exempt
+def delete_expired_secrets(request):
+    """Deletes any secrets that are beyond their expiration timestamps"""
+    ### Only accept a POST method ###
+    if request.method != 'POST':
+        status = 405
+        message = 'Invalid method'
+        return return_response(status, message)
+
+    ### Validate the Quartz API key ###
+    api_key = request.META.get('HTTP_AUTHORIZATION')
+    if api_key != settings.API_KEY:
+        status = 403
+        message = 'Invalid API key'
+        return return_response(status, message)
+
+    ### Run the job ###
+    ### Find all records that are beyond the expiration timestamp ###
+    now = datetime.now(pytz.utc)
+    secrets = models.Secret.objects.filter(expiration_timestamp__lt=now)
+    status = 200
+    ### If there are any expired secrets, delete them ###
+    if len(secrets) > 0:
+        for secret in secrets:
+            secret.delete()
+        if len(secrets) == 1:
+            message = '1 expired secret was deleted'
+        else:
+            message = str(len(secrets)) + ' expired messages were deleted'
+    else:
+        message = 'There weren\'t any expired secrets to delete'
+    return return_response(status, message)
