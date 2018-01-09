@@ -10,15 +10,44 @@ import pytz
 import json
 
 
-### Internal function ###
+### Internal functions ###
 
-def return_response(status, message):
+def create_secret(request):
+    """Creates a record of a new secret message in the database and returns the
+    URL to that access that message"""
+    try:
+        ### Try to get the message from the form ###
+        message = request.POST.get('message')
+        ### Otherwise try to get the message from the API request body ###
+        if not message:
+            request_body = json.loads(request.body.decode())
+            message = request_body['message']
+        message = escape(message)
+    except:
+        return
+
+    ### Save the message in the database ###
+    message_record = models.Secret(message=message)
+    message_record.save()
+
+    ### Build the URL to access the secret ###
+    if request.is_secure == True:
+        protocol = 'https://'
+    else:
+        protocol = 'http://'
+    domain = request.META['HTTP_HOST']
+    message_url =  protocol + domain + '/secret/confirm/' + str(message_record.uuid)
+    return message_url
+
+
+def return_response(status, message, parameter='message'):
+    """Returns a JSON response with a given status and message"""
     success = False
     if status == 200:
         success = True
     message = {
-        'Success': success,
-        'Message': message
+        'success': success,
+        parameter: message
     }
     message = json.dumps(message)
     return HttpResponse(message, status=status, content_type='application/json')
@@ -39,12 +68,7 @@ def home(request):
         return render(request, 'home.html')
 
     ### Get the message from the form and save it to the database ###
-    # message = request.POST.get('message')
-    message = escape(request.POST.get('message'))
-    message_record = models.Secret(message=message)
-    message_record.save()
-
-    message_url = request.build_absolute_uri() + 'secret/confirm/' + str(message_record.uuid)
+    message_url = create_secret(request)
     context = {
         'open_modal': True,
         'display_url': True,
@@ -80,7 +104,7 @@ def view_secret(request, confirmation, uuid):
     return render(request, 'home.html', context)
 
 
-### API view ###
+### API views ###
 @csrf_exempt
 def delete_expired_secrets(request):
     """Deletes any secrets that are beyond their expiration timestamps"""
@@ -92,7 +116,7 @@ def delete_expired_secrets(request):
 
     ### Validate the Quartz API key ###
     api_key = request.META.get('HTTP_AUTHORIZATION')
-    if api_key != settings.API_KEY:
+    if api_key != settings.QUARTZ_API_KEY:
         status = 403
         message = 'Invalid API key'
         return return_response(status, message)
@@ -113,3 +137,33 @@ def delete_expired_secrets(request):
     else:
         message = 'There weren\'t any expired secrets to delete'
     return return_response(status, message)
+
+
+@csrf_exempt
+def create_secret_api(request):
+    """Accepts a POST API request to create a new secret and returns the URL
+    to access that secret in the response body as the 'message_url' param"""
+    ### Only accept a POST method ###
+    if request.method != 'POST':
+        status = 405
+        message = 'Invalid method'
+        return return_response(status, message)
+
+    ### Validate the Enigma API key ###
+    api_key = request.META.get('HTTP_AUTHORIZATION')
+    if api_key != settings.ENIGMA_API_KEY:
+        status = 403
+        message = 'Invalid API key'
+        return return_response(status, message)
+
+    ### Get the request body and save it to the database ###
+    message_url = create_secret(request)
+    ### Return a 400 if the request body is missing the `message` parameter ###
+    if not message_url:
+        status = 400
+        message = 'Request body missing the \'message\' parameter'
+        return return_response(status, message)
+
+    status = 200
+    message = message_url
+    return return_response(status, message, parameter='message_url')

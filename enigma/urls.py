@@ -22,6 +22,7 @@ from source import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('secret/create', views.create_secret_api, name='create_secret'),
     path('secret/<str:confirmation>/<uuid:uuid>', views.view_secret,
          name='view_secret'),
     path('secrets/expired/delete', views.delete_expired_secrets,
