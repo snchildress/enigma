@@ -77,25 +77,11 @@ Status Code: 400
 }
 ```
 
-##### Unauthorized Response Body
+## Slack Slash Command
 
-Status Code: 403
-```
-{
-    "message": "Invalid API key",
-    "success": false
-}
-```
+Enigma also supports the generation of a one-time access URL for secrets in Slack via a slash command. To generate a URL, simple type `/secret message`.
 
-##### Invalid Method Response Body
-
-Status Code: 405
-```
-{
-    "message": "Invalid method",
-    "success": false
-}
-```
+Enigma will also directly deliver the access URL to a recipient in the same Slack org by @mentioning that user to begin the Slash command. For example, `/secret @steven message` would directly message the access URL to `@steven`.
 
 ## Additional Documentation
 
