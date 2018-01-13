@@ -49,7 +49,8 @@ def create_secret(request):
                 request_body = request.POST
                 message = request_body['text']
                 method = 'Slack'
-        message = escape(message)
+        if method == 'UI' or method == 'API':
+            message = escape(message)
     except:
         return
 
