@@ -53,11 +53,10 @@ def create_secret(request):
     message_record.save()
 
     ### Build the URL to access the secret ###
-    if request.is_secure == True:
-        protocol = 'https://'
-    else:
-        protocol = 'http://'
+    protocol = 'https://'
     domain = request.META['HTTP_HOST']
+    if 'localhost' in domain:
+        protocol = 'http://'
     message_url =  protocol + domain + '/secret/confirm/' + str(message_record.uuid)
     return method, message_url
 
