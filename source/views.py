@@ -103,6 +103,11 @@ def view_secret(request, confirmation, uuid):
     would like to view the secret they intended to load. If users do not
     want to view the secret, the modal closes. If users want to view the secret,
     display it and delete it from the database"""
+    ### Ensure the path is either `view/` or `confirm/` ###
+    if confirmation != 'view' and confirmation != 'confirm':
+        return render(request, 'home.html')
+
+    ### Check if the secret message exists ###
     try:
         secret = models.Secret.objects.get(uuid=uuid)
         message = secret.message
@@ -110,8 +115,8 @@ def view_secret(request, confirmation, uuid):
             'open_modal': True,
             'uuid': uuid
         }
-        ### Display the message and delete it if `/view` is in the path ###
-        ### Otherwise ask for confirmation to display the message       ###
+        ### Display the message and delete it if `view/` is in the path ###
+        ### Otherwise ask for confirmation to display the message ###
         if confirmation == 'view':
             context['secret_message'] = message
             secret.delete()
