@@ -15,13 +15,18 @@ import json
 def authenticate(request):
     """Authenticates that an API request has a valid API key or Slack token"""
     authenticated = False
+
     ### Get the API key from the header if it exists ###
     api_key = request.META.get('HTTP_AUTHORIZATION')
-    ### Get the Slack token from the form request if it exists ###
-    slack_token = request.POST['token']
-    ### Ensure one or the other is valid ###
-    if api_key == settings.ENIGMA_API_KEY or slack_token == settings.SLACK_TOKEN:
+    if api_key == settings.ENIGMA_API_KEY:
         authenticated = True
+
+    else:
+        ### Get the Slack token from the form request if it exists ###
+        slack_token = request.POST['token']
+        if slack_token == settings.SLACK_TOKEN:
+            authenticated = True
+            
     return authenticated
 
 
