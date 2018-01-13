@@ -8,6 +8,8 @@ from source import models
 from datetime import datetime
 import pytz
 import json
+import requests
+import re
 
 
 ### Internal functions ###
@@ -49,6 +51,11 @@ def create_secret(request):
                 request_body = request.POST
                 message = request_body['text']
                 method = 'Slack'
+                if message.startswith('<@'):
+                    ### Remove the @mention of the recipient for the message ###
+                    message = re.sub(r'[\<].*?[\>]', '', message)
+                    ### Remove the extraneous space after the @mention ###
+                    message = message.replace(' ', '', 1)
         if method == 'UI' or method == 'API':
             message = escape(message)
     except:
@@ -65,6 +72,25 @@ def create_secret(request):
         protocol = 'http://'
     message_url =  protocol + domain + '/secret/confirm/' + str(message_record.uuid)
     return method, message_url
+
+
+def send_slack_message(sender, recipient, message_url):
+    """Sends a Slack message to the specified user in a direct message"""
+    url = 'https://slack.com/api/chat.postMessage'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + settings.SLACK_OAUTH_TOKEN
+    }
+    data = {
+        'channel': recipient,
+        'text': 'You just received a secret from ' + sender + ':',
+        'attachments': [{'text': '<' + message_url + '|One Time Access URL>'}],
+        'as_user': False,
+    }
+    data = json.dumps(data)
+    response = requests.post(url, headers=headers, data=data)
+    if not response.ok:
+        print(response.json())
 
 
 def return_response(status, message, parameter='message'):
@@ -199,6 +225,32 @@ def create_secret_api(request):
     ### Otherwise successfully return the message access URL ###
     status = 200
     if method == 'Slack':
-        message = "Send your recipient this one-time access URL: " + message_url
-        return return_response(status, message, parameter='text')
-    return return_response(status, message_url, parameter='message_url')
+        message = request.POST['text']
+        ### If there is an @mention, send that recipient the URL ###
+        if message.startswith('<@'):
+            ### Get recipient ID from beginning of message matching @ID| ###
+            recipient_id = re.search(r'[@](.*?)[|]', message)
+            recipient = recipient_id.group().replace('@', '').replace('|', '')
+
+            ### Format the Slack syntax to @mention the sending user ###
+            sender_name = request.POST['user_name']
+            sender_id = request.POST['user_id']
+            sender = '<@' + sender_id + '|' + sender_name  + '>'
+
+            ### Message the URL to the recipient ###
+            send_slack_message(sender, recipient, message_url)
+
+            ### Message to the sender confirmation that the URL was delivered ###
+            recipient_name = re.search(r'[<](.*?)[\>]', message)
+            recipient_name = recipient_name.group()
+            message = recipient_name + ' just received your message!'
+            return return_response(status, message, parameter='text')
+
+        ### Otherwise send the URL to the sender ###
+        else:
+            message = 'Send your recipient this one-time access URL: ' + message_url
+            return return_response(status, message, parameter='text')
+
+    ### Send the access URL in JSON if created via the API ###
+    else:
+        return return_response(status, message_url, parameter='message_url')
