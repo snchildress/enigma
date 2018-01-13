@@ -24,6 +24,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 ALLOWED_HOSTS = [
     '.lucidhq.engineering',
     'localhost',
+    '.localtunnel.me',
 ]
 
 
@@ -142,3 +143,4 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 FIELD_ENCRYPTION_KEY = os.environ['FIELD_ENCRYPTION_KEY']
 QUARTZ_API_KEY = os.environ['QUARTZ_API_KEY']
 ENIGMA_API_KEY = os.environ['ENIGMA_API_KEY']
+SLACK_TOKEN = os.environ['SLACK_TOKEN']

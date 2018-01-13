@@ -12,16 +12,38 @@ import json
 
 ### Internal functions ###
 
+def authenticate(request):
+    """Authenticates that an API request has a valid API key or Slack token"""
+    authenticated = False
+    ### Get the API key from the header if it exists ###
+    api_key = request.META.get('HTTP_AUTHORIZATION')
+    ### Get the Slack token from the form request if it exists ###
+    slack_token = request.POST['token']
+    ### Ensure one or the other is valid ###
+    if api_key == settings.ENIGMA_API_KEY or slack_token == settings.SLACK_TOKEN:
+        authenticated = True
+    return authenticated
+
+
 def create_secret(request):
     """Creates a record of a new secret message in the database and returns the
     URL to that access that message"""
     try:
         ### Try to get the message from the form ###
         message = request.POST.get('message')
+        method = 'UI'
         ### Otherwise try to get the message from the API request body ###
         if not message:
-            request_body = json.loads(request.body.decode())
-            message = request_body['message']
+            ### Try to get the message as the `message` param ###
+            try:
+                request_body = json.loads(request.body.decode())
+                message = request_body['message']
+                method = 'API'
+            ### Otherwise use the `text` param Slack utilizes ###
+            except:
+                request_body = request.POST
+                message = request_body['text']
+                method = 'Slack'
         message = escape(message)
     except:
         return
@@ -37,7 +59,7 @@ def create_secret(request):
         protocol = 'http://'
     domain = request.META['HTTP_HOST']
     message_url =  protocol + domain + '/secret/confirm/' + str(message_record.uuid)
-    return message_url
+    return method, message_url
 
 
 def return_response(status, message, parameter='message'):
@@ -68,7 +90,7 @@ def home(request):
         return render(request, 'home.html')
 
     ### Get the message from the form and save it to the database ###
-    message_url = create_secret(request)
+    method, message_url = create_secret(request)
     context = {
         'open_modal': True,
         'display_url': True,
@@ -115,7 +137,6 @@ def delete_expired_secrets(request):
         return return_response(status, message)
 
     ### Validate the Quartz API key ###
-    api_key = request.META.get('HTTP_AUTHORIZATION')
     if api_key != settings.QUARTZ_API_KEY:
         status = 403
         message = 'Invalid API key'
@@ -149,21 +170,25 @@ def create_secret_api(request):
         message = 'Invalid method'
         return return_response(status, message)
 
-    ### Validate the Enigma API key ###
-    api_key = request.META.get('HTTP_AUTHORIZATION')
-    if api_key != settings.ENIGMA_API_KEY:
+    ### Authenticate that the request has valid credentials ###
+    authenticated = authenticate(request)
+    if not authenticated:
         status = 403
-        message = 'Invalid API key'
+        message = 'Invalid API key or Slack token'
         return return_response(status, message)
 
     ### Get the request body and save it to the database ###
-    message_url = create_secret(request)
+    method, message_url = create_secret(request)
+
     ### Return a 400 if the request body is missing the `message` parameter ###
     if not message_url:
         status = 400
         message = 'Request body missing the \'message\' parameter'
         return return_response(status, message)
 
+    ### Otherwise successfully return the message access URL ###
     status = 200
-    message = message_url
-    return return_response(status, message, parameter='message_url')
+    if method == 'Slack':
+        message = "Send your recipient this one-time access URL: " + message_url
+        return return_response(status, message, parameter='text')
+    return return_response(status, message_url, parameter='message_url')
