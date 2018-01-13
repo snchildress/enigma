@@ -83,6 +83,16 @@ Enigma also supports the generation of a one-time access URL for secrets in Slac
 
 Enigma will also directly deliver the access URL to a recipient in the same Slack org by @mentioning that user to begin the Slash command. For example, `/secret @steven message` would directly message the access URL to `@steven`.
 
+## Progress
+
+- [x] sharing sensitive plain text data on an adhoc basis
+    - [x] create secret from UI
+    - [x] create secret from API
+    - [x] create secret from Slack slash command
+    - [x] message secret directly to Slack user
+- [ ] securing a repository of shared sensitive data
+- [ ] sharing sensitive documents on an adhoc basis.
+
 ## Additional Documentation
 
 This [proposal](https://docs.google.com/document/d/1Y6Auw5azimS5MpI1qPMfv5xGLXKD-K_g-iwgkZx5NRk/) describes the various features and considerations for building Enigma.
