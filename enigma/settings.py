@@ -23,8 +23,6 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 ALLOWED_HOSTS = [
     '.lucidhq.engineering',
-    'localhost',
-    '.localtunnel.me',
 ]
 
 
@@ -95,6 +93,8 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
+    ALLOWED_HOSTS.append('localhost')
+    ALLOWED_HOSTS.append('.localtunnel.me')
 
 
 
