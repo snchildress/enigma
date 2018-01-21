@@ -173,24 +173,24 @@ def delete_expired_secrets(request):
         return return_response(status, message)
 
     ### Validate the Quartz API key ###
+    api_key = request.META.get('HTTP_AUTHORIZATION')
     if api_key != settings.QUARTZ_API_KEY:
         status = 403
-        message = 'Invalid API key'
+        message = 'Invalid Quartz job token'
         return return_response(status, message)
 
     ### Run the job ###
     ### Find all records that are beyond the expiration timestamp ###
     now = datetime.now(pytz.utc)
     secrets = models.Secret.objects.filter(expiration_timestamp__lt=now)
+    ### Count the number of secrets to be deleted and delete them ###
+    number_of_deleted_secrets = len(secrets)
+    secrets.delete()
     status = 200
-    ### If there are any expired secrets, delete them ###
-    if len(secrets) > 0:
-        for secret in secrets:
-            secret.delete()
-        if len(secrets) == 1:
-            message = '1 expired secret was deleted'
-        else:
-            message = str(len(secrets)) + ' expired messages were deleted'
+    if number_of_deleted_secrets == 1:
+        message = '1 expired secret was deleted'
+    elif number_of_deleted_secrets > 1:
+        message = str(number_of_deleted_secrets) + ' expired messages were deleted'
     else:
         message = 'There weren\'t any expired secrets to delete'
     return return_response(status, message)
